@@ -1,5 +1,7 @@
 # PHYS 2550 - Homework 1
 
+All code can be found at https://github.com/aradhyajain430/phys-2550/blob/master/HW1/answers.ipynb
+
 ## (a) Data
 
 I opened the XLSX file in Excel and exported it as CSV.
@@ -120,7 +122,7 @@ $10^{-6}$ per coefficient is close enough for the reported results.
 
 
 # AI Usage
-AI was used for the following three areas throughout the HW
+AI was used for the following areas throughout the HW
 (a): AI was used to generate the code for matplotlib as I personally don't know how to use it well
 (b): AI was used to comment the written code throughout the submission
 (c): AI was used to clean up and double check the language used in the actual report section of this HW.
