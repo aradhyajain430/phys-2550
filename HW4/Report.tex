@@ -1,0 +1,339 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=17mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[sfdefault,type1]{roboto}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx,tabularx,array,caption,float,needspace,titlesec}
+\usepackage[table]{xcolor}
+\usepackage[colorlinks=true,urlcolor=blue,linkcolor=black]{hyperref}
+\hypersetup{pdftitle={PHYS 2550 - Homework 4}}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\renewcommand{\arraystretch}{1.15}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{2em}
+\setlength{\intextsep}{8pt}
+\captionsetup{font=small,labelformat=empty,skip=4pt,justification=raggedright,singlelinecheck=false}
+\titleformat{\section}{\fontsize{17}{20}\selectfont\bfseries}{}{0pt}{}
+\titleformat{\subsection}{\fontsize{12}{14}\selectfont\bfseries}{}{0pt}{}
+\titlespacing*{\section}{0pt}{12pt}{7pt}
+\titlespacing*{\subsection}{0pt}{9pt}{4pt}
+\raggedright
+\raggedbottom
+\begin{document}
+{\fontsize{22}{26}\selectfont\bfseries PHYS 2550 - Homework 4\par}
+\vspace{7pt}
+All code and outputs: \href{https://github.com/aradhyajain430/phys-2550/blob/master/HW4/answers.ipynb}{answers.ipynb on GitHub}.
+
+\Needspace{5\baselineskip}
+\section*{Part 1 - Theory}
+
+\Needspace{4\baselineskip}
+\subsection*{1.1. Three distances}
+
+Here $x_B-x_A=(3,4)$ and $x_C-x_A=(1,-1)$.
+
+{\small\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{|L|L|L|L|}
+\hline
+\rowcolor{black!8}
+\textbf{Pair} & \textbf{Euclidean} & \textbf{Manhattan} & \textbf{Cosine similarity} \\ \hline
+$(A,B)$ & $\sqrt{9+16}=5$ & $3+4=7$ & $50/(5\cdot10)=1$ \\ \hline
+$(A,C)$ & $\sqrt{1+1}\approx1.41$ & $1+1=2$ & $24/(5\cdot5)=0.96$ \\ \hline
+Closer to $A$ & $C$ & $C$ & $B$ \\ \hline
+\end{tabularx}\par}
+
+For cosine similarity a larger value means the points are closer, so $B$ is the nearer neighbour by that measure.
+
+\Needspace{4\baselineskip}
+\subsection*{1.2. Which one is physical?}
+
+Cosine similarity. Since $x_B=2x_A$, star $B$ has the same ratio of blue to red flux as $A$ and is just twice as bright, so it's the same type of star at a different distance. Cosine similarity only depends on the direction of the flux vector, which is exactly the thing that stays fixed when both fluxes are scaled by the same factor.
+
+\Needspace{4\baselineskip}
+\subsection*{1.3. Is it a distance?}
+
+$d_{\cos}(A,B)=1-1=0$ even though $A\neq B$, so it fails $d(x,y)=0\iff x=y$. Any two points on the same ray from the origin end up at distance 0.
+
+\Needspace{4\baselineskip}
+\subsection*{1.4. Mahalanobis}
+
+Both stars are $\sqrt2\approx1.41$ from the mean in Euclidean distance. Using $S^{-1}=\tfrac13\begin{pmatrix}2&-1\\-1&2\end{pmatrix}$,
+
+\[
+D_M(p)=\sqrt{\tfrac13(2-1-1+2)}=\sqrt{2/3}\approx0.82,\qquad D_M(q)=\sqrt{\tfrac13(2+1+1+2)}=\sqrt2\approx1.41.
+\]
+
+The eigenvectors of $S$ are $(1,1)$ with eigenvalue 3 and $(1,-1)$ with eigenvalue 1, so the population is an ellipse stretched along the diagonal. That's why the two distances disagree. Star $p$ sits along the long axis, where the population is spread out, while $q$ sits along the short axis, where very few stars get that far from the mean, so I would flag $q$. The Euclidean distance has no information about the shape of the population.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.42\linewidth]{figures/mahalanobis.png}
+\caption{Population contours with $p$ and $q$. The dotted circle is Euclidean distance $\sqrt2$.}
+\end{figure}
+
+\Needspace{4\baselineskip}
+\subsection*{1.5. Outliers}
+
+The squared Euclidean distance is $1+1+1+100=103$, and the fourth coordinate contributes 100 of that, or 97\%. For the Manhattan distance it contributes 10 out of 13, or 77\%. Squaring turns a difference of 10 into 100, so one bad coordinate dominates the Euclidean distance much more than the Manhattan distance.
+
+\Needspace{4\baselineskip}
+\subsection*{2.1. Iterations}
+
+{\small\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{|l|L|}
+\hline
+\rowcolor{black!8}
+\textbf{Step} & \textbf{Result} \\ \hline
+Assignment 1 & $C_1=\{x_1,x_3\}$, $C_2=\{x_2,x_4,x_5,x_6\}$, $J=0+1+0+25+32+34=92$ \\ \hline
+Update 1 & $\mu_1=(0,0.5)$, $\mu_2=(3.5,3.25)$ \\ \hline
+Assignment 2 & $C_1=\{x_1,x_2,x_3\}$, $C_2=\{x_4,x_5,x_6\}$, $J=1.75+6.9375=8.6875$ \\ \hline
+Update 2 & $\mu_1=(\tfrac13,\tfrac13)$, $\mu_2=(\tfrac{13}3,\tfrac{13}3)$ \\ \hline
+Assignment 3 & No change, $J=\tfrac43+\tfrac43=\tfrac83\approx2.67$ \\ \hline
+\end{tabularx}\par}
+
+In the first assignment $x_4$, $x_5$ and $x_6$ all go to $\mu_2=(1,0)$, which is slightly closer to them (squared distances 25, 32 and 34, against 32, 41 and 41 for $\mu_1$). Nothing changes after the third assignment, and the final $J$ matches the $J_{\min}$ given for $k=2$.
+
+\Needspace{4\baselineskip}
+\subsection*{2.2. $J$ never increases}
+
+In the assignment step every point moves to its nearest centroid, which can't make any term larger. In the update step the assignments are fixed and $J$ is a sum of quadratics in the $\mu_j$, each one minimised by the mean of its cluster. So $J$ goes down or stays the same at every step, and since there are only finitely many ways to assign the points the algorithm has to stop, although where it stops depends on the starting centroids and is only guaranteed to be a local minimum.
+
+\Needspace{4\baselineskip}
+\subsection*{2.3. Initialisation}
+
+(i) Three of the five remaining points are in $\{x_4,x_5,x_6\}$, so $P=3/5$.
+
+(ii) Measured from $x_1$, $D(x_i)^2=1,1,32,41,41$ for $i=2,\dots,6$. These add up to 116, so $P=(32+41+41)/116=57/58\approx0.98$.
+
+(iii) $x_5$ and $x_6$ are tied as the farthest points, both at $D=\sqrt{41}$. Taking the lower index gives $x_5$, though either one is in the far group.
+
+\Needspace{4\baselineskip}
+\subsection*{2.4. Evaluating the result}
+
+(i) With $a=(1+\sqrt2)/2\approx1.207$ and $b=(\sqrt{25}+\sqrt{32}+\sqrt{34})/3\approx5.496$, the silhouette is $s=(b-a)/b\approx0.78$. That's close to 1, which makes sense because $x_2$ is much closer to its own group than to the other one.
+
+(ii) I took $\sigma_i$ to be the mean distance from a cluster's points to its centroid. By symmetry $\sigma_1=\sigma_2=(\sqrt2+2\sqrt5)/9\approx0.654$, and the centroids are $4\sqrt2\approx5.657$ apart, so $DB=2\sigma_1/d\approx0.23$. Low values mean tight clusters that are far apart, which describes these two groups well.
+
+\Needspace{4\baselineskip}
+\subsection*{2.5. How many clusters?}
+
+$J_{\min}$ falls by about 48 going from one cluster to two, and after that each extra cluster lowers it by less than 1, so the elbow is at $k=2$. Minimising $J$ directly doesn't work because $J_{\min}$ keeps dropping as $k$ grows and reaches 0 at $k=n$, when every point has its own cluster.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.45\linewidth]{figures/elbow.png}
+\caption{Smallest $J$ against $k$.}
+\end{figure}
+
+\Needspace{4\baselineskip}
+\subsection*{3.1-3.2. Single and complete linkage}
+
+In one dimension, single linkage just merges across the gaps between neighbouring hits (1, 2, 3, 1 and 5), smallest first. Complete linkage starts the same way with $\{0,1\}$ and $\{6,7\}$. The smallest distance after that is $d(\{0,1\},\{3\})=3$, compared with 4 from $\{3\}$ to $\{6,7\}$ and 6 from $\{6,7\}$ to $\{12\}$. Then $\{6,7\}$ joins $\{12\}$ at 6, which beats the 7 between $\{0,1,3\}$ and $\{6,7\}$.
+
+{\small\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{|l|L|c|L|c|}
+\hline
+\rowcolor{black!8}
+\textbf{Step} & \textbf{Single linkage} & \textbf{Distance} & \textbf{Complete linkage} & \textbf{Distance} \\ \hline
+1 & $\{0\}+\{1\}$ & 1 & $\{0\}+\{1\}$ & 1 \\ \hline
+2 & $\{6\}+\{7\}$ & 1 & $\{6\}+\{7\}$ & 1 \\ \hline
+3 & $\{0,1\}+\{3\}$ & 2 & $\{0,1\}+\{3\}$ & 3 \\ \hline
+4 & $\{0,1,3\}+\{6,7\}$ & 3 & $\{6,7\}+\{12\}$ & 6 \\ \hline
+5 & $\{0,1,3,6,7\}+\{12\}$ & 5 & $\{0,1,3\}+\{6,7,12\}$ & 12 \\ \hline
+\end{tabularx}\par}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/dendrograms.png}
+\caption{Dendrograms. The dashed line is the cut at 2.5 used in 3.3.}
+\end{figure}
+
+\Needspace{4\baselineskip}
+\subsection*{3.3. Two clusters, and one more hit}
+
+Cutting at two clusters gives $\{0,1,3,6,7\}$ and $\{12\}$ for single linkage, and $\{0,1,3\}$ and $\{6,7,12\}$ for complete linkage. Cutting the single-linkage tree at 2.5 leaves $\{0,1,3\}$, $\{6,7\}$ and $\{12\}$. The extra hit at 4.5 is 1.5 from both 3 and 6, so with it the same cut gives $\{0,1,3,4.5,6,7\}$ and $\{12\}$, and a single noise hit has merged two particle tracks. Single linkage only needs one close pair to join two clusters, so a chain of stray hits can connect clusters that are really separate.
+
+\Needspace{4\baselineskip}
+\subsection*{3.4. DBSCAN: core, border, noise}
+
+Neighbour counts include the point itself (C is core, B is border, N is noise).
+
+{\small\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{|l|C|C|C|C|C|C|C|C|C|}
+\hline
+\rowcolor{black!8}
+\textbf{$x$} & \textbf{0} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{5} & \textbf{8} & \textbf{9} & \textbf{10} & \textbf{14} \\ \hline
+Neighbours & 2 & 3 & 3 & 2 & 1 & 2 & 3 & 2 & 1 \\ \hline
+Label & B & C & C & B & N & B & C & B & N \\ \hline
+\end{tabularx}\par}
+
+This gives two clusters, $\{0,1,2,3\}$ and $\{8,9,10\}$, with 5 and 14 left as noise.
+
+\Needspace{4\baselineskip}
+\subsection*{3.5. Changing $R$}
+
+{\small\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{|l|C|C|C|C|C|C|C|C|C|}
+\hline
+\rowcolor{black!8}
+\textbf{$x$} & \textbf{0} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{5} & \textbf{8} & \textbf{9} & \textbf{10} & \textbf{14} \\ \hline
+Neighbours & 3 & 4 & 4 & 4 & 2 & 3 & 3 & 3 & 1 \\ \hline
+Label & C & C & C & C & B & C & C & C & N \\ \hline
+\end{tabularx}\par}
+
+With the larger radius, 0, 3, 8 and 10 become core points and 5 is picked up as a border point of 3. The clusters grow to $\{0,1,2,3,5\}$ and $\{8,9,10\}$, but there are still two of them.
+
+\Needspace{4\baselineskip}
+\subsection*{4.1. Same softmax}
+
+\[
+-\varepsilon\|x_i-\mu_j\|^2=-\varepsilon\|x_i\|^2+2\varepsilon\,x_i\cdot\mu_j-\varepsilon\|\mu_j\|^2.
+\]
+
+The $-\varepsilon\|x_i\|^2$ term is the same for every $j$, so its exponential factors out of the numerator and the denominator and cancels. If all the centroids have the same length, the $-\varepsilon\|\mu_j\|^2$ term cancels for the same reason, which leaves $w_{ij}=\operatorname{softmax}_j(2\varepsilon\,x_i\cdot\mu_j)$. Then $x_i$ plays the query, $\mu_j$ the key, and $2\varepsilon$ does the job of $1/\sqrt{d_k}$.
+
+\Needspace{4\baselineskip}
+\subsection*{4.2. One point, two centroids}
+
+The squared distances are 1 to $\mu_1$ and 4 to $\mu_2$, so
+
+\[
+w_1=\frac{1}{1+e^{-3}}=\frac1{1.05}\approx0.95,\qquad w_2=\frac{e^{-3}}{1+e^{-3}}\approx0.05.
+\]
+
+As $\varepsilon\to\infty$ the weights go to $(1,0)$ and the point belongs entirely to its nearest centroid, which is the hard k-means from Problem 2. As $\varepsilon\to0$ they go to $(\tfrac12,\tfrac12)$.
+
+\Needspace{4\baselineskip}
+\subsection*{4.3. The update step}
+
+The data points act as the values, since $\mu_j=\sum_i\tilde w_{ij}x_i$ with $\tilde w_{ij}=w_{ij}/\sum_{i'}w_{i'j}$. In attention the weights $a_{ij}$ are normalised over $j$, the same index that the sum in $z_i$ runs over. Soft k-means is different. Its weights are normalised over the clusters $j$, but the update sums over the points $i$, which is why it needs the extra division by $\sum_i w_{ij}$. Put another way, the update step is attention where each centroid acts as a query over all the points.
+
+\Needspace{4\baselineskip}
+\subsection*{4.4. Attention weights as a similarity}
+
+Not directly. $A$ isn't symmetric ($a_{12}=0.2$ but $a_{21}=0.6$), and $a_{21}>a_{22}$ would mean particle 2 is more similar to particle 1 than to itself. Each row of $A$ is really a probability distribution over the other particles. Symmetrising gives
+
+\[
+S=\tfrac12(A+A^T)=\begin{pmatrix}0.7&0.4&0.1\\0.4&0.3&0.1\\0.1&0.1&0.8\end{pmatrix},\qquad d_{12}=0.6,\quad d_{13}=d_{23}=0.9.
+\]
+
+Particles 1 and 2 are the closest pair, so single linkage merges them first and the two clusters are $\{1,2\}$ and $\{3\}$.
+
+\Needspace{5\baselineskip}
+\section*{Part 2 - Asteroid families}
+
+\Needspace{4\baselineskip}
+\subsection*{Setup}
+
+After the cuts given in the problem there are 33,156 asteroids left.
+
+\Needspace{4\baselineskip}
+\subsection*{5.1. Look at the data}
+
+The histogram of $a$ has three main groups with sharp gaps at about 2.50, 2.82 and 2.95 AU, which are the Kirkwood gaps at the 3:1, 5:2 and 7:3 resonances with Jupiter. The belt runs from about 2.1 to 3.25 AU, with a thin group further out at 3.3--3.6 AU. Both scatter plots also have tight clumps sitting on top of the smooth background, for example around $(a,\sin i)\approx(2.9,0.04)$, $(3.0,0.17)$ and $(3.15,0.02)$. The colour changes across the belt as well, from mostly $a^*>0$ on the inside to mostly $a^*<0$ further out, and each clump tends to be a single colour.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/data.png}
+\caption{$\sin i$ and $e$ against $a$, coloured by $a^*$, and the distribution of $a$.}
+\end{figure}
+
+\Needspace{4\baselineskip}
+\subsection*{5.2. Preprocessing}
+
+The standard deviations are 0.301 AU for $a$, 0.0575 for $e$ and 0.0730 for $\sin i$. Since $a$ is spread out four to five times more than the other two, it would dominate the raw Euclidean distance, and the clustering would mostly slice the belt along $a$ while ignoring the clumps in $e$ and $\sin i$. Standardising puts all three features on the same scale. That is still a choice about how much each one should count, and nothing physical fixes it.
+
+\Needspace{4\baselineskip}
+\subsection*{5.3. k-means}
+
+{\small\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{|l|C|C|C|C|C|C|C|C|C|}
+\hline
+\rowcolor{black!8}
+\textbf{$k$} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} & \textbf{6} & \textbf{7} & \textbf{8} & \textbf{9} & \textbf{10} \\ \hline
+Inertia & 66,226 & 48,726 & 39,910 & 32,714 & 28,181 & 24,260 & 21,733 & 20,177 & 18,579 \\ \hline
+Silhouette & 0.329 & 0.345 & 0.339 & 0.312 & 0.329 & 0.345 & 0.352 & 0.337 & 0.336 \\ \hline
+\end{tabularx}\par}
+
+There's no sharp elbow in the inertia. The biggest drop is from $k=2$ to 3 (26\%), and after that each extra cluster takes off between 7\% and 18\%. The silhouette barely moves either, staying between 0.31 and 0.35, so none of these clusterings are cleanly separated. I went with $k=3$ because it comes right after the biggest drop and its silhouette (0.345) is within 0.007 of the best one, at $k=8$. In the plot the three clusters are roughly the low-inclination inner belt, everything with $\sin i$ above about 0.15, and the low-inclination middle and outer belt, with the boundaries running straight through the clumps from 5.1.
+
+\begin{figure}[H]
+\begin{minipage}[t]{0.49\linewidth}
+\centering\vspace{0pt}
+\includegraphics[width=\linewidth]{figures/kmeans-scan.png}
+\caption{Inertia and silhouette (on a 5,000-asteroid subsample) against $k$.}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.49\linewidth}
+\centering\vspace{0pt}
+\includegraphics[width=\linewidth]{figures/kmeans-clusters.png}
+\caption{k-means clusters for $k=3$.}
+\end{minipage}
+\end{figure}
+
+For the comparison of initialisations I ran each method ten times with \texttt{n\_init=1}:
+
+{\small\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{|L|C|C|C|C|}
+\hline
+\rowcolor{black!8}
+\textbf{Initialisation} & \textbf{Mean inertia} & \textbf{Inertia range} & \textbf{Mean iterations} & \textbf{Iteration range} \\ \hline
+Random & $49,441\pm1,507$ & 48,725--52,300 & 14.3 & 8--32 \\ \hline
+k-means++ & $48,726\pm0.4$ & 48,725--48,727 & 17.7 & 8--42 \\ \hline
+\end{tabularx}\par}
+
+Random initialisation got stuck in a worse local minimum (inertia 52,300) in 2 of the 10 runs, while k-means++ ended up at essentially the same inertia every time. It didn't converge any faster, though, averaging 17.7 iterations against 14.3, so here the gain from k-means++ was consistency.
+
+\Needspace{4\baselineskip}
+\subsection*{5.4. DBSCAN}
+
+{\small\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{|L|C|C|C|C|}
+\hline
+\rowcolor{black!8}
+\textbf{$R$} & \textbf{0.05} & \textbf{0.08} & \textbf{0.10} & \textbf{0.15} \\ \hline
+Clusters & 21 & 39 & 42 & 28 \\ \hline
+Noise fraction & 93.7\% & 76.1\% & 61.4\% & 31.3\% \\ \hline
+\end{tabularx}\par}
+
+With $R=0.05$ or $0.08$ most of the points are labelled noise and only the densest cores survive. By $R=0.15$ the clusters have started merging, and the biggest one, with 9,516 members, covers most of the inner belt. I picked $R=0.10$, which gives the most clusters and still keeps the clumps from 5.1 apart. The cost is that 61\% of the asteroids end up as noise, and the inner belt is still one large cluster of 6,055.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\linewidth]{figures/dbscan-clusters.png}
+\caption{DBSCAN clusters for $R=0.10$ and MinPts $=20$, with noise in grey.}
+\end{figure}
+
+\Needspace{4\baselineskip}
+\subsection*{5.5. A physical check}
+
+Over the whole sample the standard deviation of $a^*$ is 0.107. For the clusters with at least 300 members:
+
+{\small\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{|L|C|C|C|C|C|}
+\hline
+\rowcolor{black!8}
+\textbf{Algorithm} & \textbf{Clusters} & \textbf{Asteroids} & \textbf{Std of $a^*$ per cluster} & \textbf{Weighted std} & \textbf{Change} \\ \hline
+k-means & 3 & 33,156 & 0.100--0.110 & 0.104 & $-3\%$ \\ \hline
+DBSCAN & 7 & 10,458 & 0.049--0.100 & 0.083 & $-23\%$ \\ \hline
+\end{tabularx}\par}
+
+DBSCAN's groups are much more uniform in colour. Its five smaller clusters have standard deviations between 0.049 and 0.062, about half the value for the whole sample, while the k-means clusters are barely better than not clustering at all. Some of the DBSCAN clusters are known asteroid families. The darkest one, at $(a,\sin i)\approx(3.15,0.02)$ with mean $a^*=-0.113$, is the Themis family, and Koronis at (2.90, 0.04) and Eos at (3.02, 0.18) also come out as their own clusters. Fragments of one parent body are made of the same material, so a single-colour group is what a real family should look like, and the k-means clusters are better described as large regions of orbit space that each contain several families.
+
+The comparison does favour DBSCAN in two ways. It has more clusters (7 against 3), which lowers the spread by itself, and it only counts the 31.5\% of asteroids in its dense cores, since noise points are left out. Its two biggest clusters, with 6,055 and 1,524 members, have standard deviations of 0.093 and 0.100, close to k-means, probably because each one contains several families. A fairer test would run both methods on the same asteroids with a similar number of clusters.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\linewidth]{figures/colour-check.png}
+\caption{Distribution of $a^*$ in each cluster with at least 300 members.}
+\end{figure}
+
+\Needspace{5\baselineskip}
+\subsection*{AI Usage}
+
+I used Claude for help with the theory, code and writing. The numbers come from running the notebook.
+
+\end{document}
